@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+
 	"github.com/urfave/cli/v2"
 	"github.com/wuxingzhong/rest-parser/parser"
 	"io/ioutil"
@@ -10,41 +10,105 @@ import (
 	"os"
 )
 
+var (
+	conf Config
+)
+
 func main() {
-	var (
-		restJsonConfig string
-		configEnv      string
-		restFile       string
-	)
 	app := &cli.App{
-		Name:      "rest-load",
-		Usage:     "rest api 负载测试",
-		ArgsUsage: "rest文件",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name: "config",
-				Aliases: []string{
-					"c",
+		Name:  "rest-load",
+		Usage: "rest api负载测试",
+		Commands: []*cli.Command{
+			{
+				Name:      "curl",
+				Usage:     "curl方式,流程测试",
+				ArgsUsage: "rest文件",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name: "config",
+						Aliases: []string{
+							"c",
+						},
+						Usage:       "json配置文件",
+						Destination: &conf.RestJsonConfig,
+						Value:       "http-client.env.json",
+					},
+					&cli.StringFlag{
+						Name: "configEnv",
+						Aliases: []string{
+							"e",
+						},
+						Usage:       "配置环境名称",
+						Destination: &conf.ConfigEnv,
+						Value:       "default",
+					},
+					&cli.StringFlag{
+						Name: "extArgs",
+						Aliases: []string{
+							"g",
+						},
+						Usage:       "外部命令额外参数",
+						Destination: &conf.ExtArgs,
+						Value:       "",
+					},
 				},
-				Usage:       "json配置文件",
-				Destination: &restJsonConfig,
-				Value:       "http-client.env.json",
-			},
-			&cli.StringFlag{
-				Name: "configEnv",
-				Aliases: []string{
-					"e",
+				Action: func(c *cli.Context) error {
+					if c.NArg() > 0 {
+						conf.RestFile = c.Args().First()
+					} else {
+						log.Fatalln("缺少rest文件参数")
+						return nil
+					}
+					restInfoList := initRun(&conf)
+					curlRun(&conf, restInfoList)
+					return nil
 				},
-				Usage:       "配置环境名称",
-				Destination: &configEnv,
-				Value:       "default",
 			},
-		},
-		Action: func(c *cli.Context) error {
-			if c.NArg() > 0 {
-				restFile = c.Args().First()
-			}
-			return nil
+			{
+				Name:      "ab",
+				Usage:     "ab方式,流程测试",
+				ArgsUsage: "rest文件",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name: "config",
+						Aliases: []string{
+							"c",
+						},
+						Usage:       "json配置文件",
+						Destination: &conf.RestJsonConfig,
+						Value:       "http-client.env.json",
+					},
+					&cli.StringFlag{
+						Name: "configEnv",
+						Aliases: []string{
+							"e",
+						},
+						Usage:       "配置环境名称",
+						Destination: &conf.ConfigEnv,
+						Value:       "default",
+					},
+					&cli.StringFlag{
+						Name: "extArgs",
+						Aliases: []string{
+							"g",
+						},
+						Usage:       "外部命令额外参数",
+						Destination: &conf.ExtArgs,
+						Value:       "",
+					},
+				},
+				Action: func(c *cli.Context) error {
+					if c.NArg() > 0 {
+						conf.RestFile = c.Args().First()
+					} else {
+						log.Fatalln("缺少rest文件参数")
+						return nil
+					}
+					restInfoList := initRun(&conf)
+					abRun(&conf, restInfoList)
+					return nil
+				},
+			},
 		},
 	}
 	err := app.Run(os.Args)
@@ -52,28 +116,23 @@ func main() {
 		log.Fatal(err)
 		return
 	}
+	return
+}
 
+func initRun(c *Config) []parser.RestInfo {
 	// 读取配置文件
-	restJsonData, err := ioutil.ReadFile(restJsonConfig)
+	restJsonData, err := ioutil.ReadFile(c.RestJsonConfig)
 	if err != nil {
 		log.Fatal(err)
-		return
+		return nil
 	}
 	nameMap := make(map[string]parser.VarMap)
 	err = json.Unmarshal(restJsonData, &nameMap)
 	if err != nil {
 		log.Fatal(err)
-		return
+		return nil
 	}
-	varMap := nameMap[configEnv]
-	restInfoList, err := parser.RestParser(restFile, varMap)
-	resultList := make(ResultList, len(restInfoList))
-	for k, v := range restInfoList {
-		out, err := curlCmd(resultList, &v)
-		if err != nil {
-			fmt.Printf("err(%v)\n", err)
-		}
-		resultList[k] = out
-	}
-	return
+	varMap := nameMap[c.ConfigEnv]
+	restInfoList, err := parser.RestParser(c.RestFile, varMap)
+	return restInfoList
 }

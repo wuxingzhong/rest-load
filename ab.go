@@ -3,14 +3,15 @@ package main
 import (
 	"fmt"
 	"github.com/wuxingzhong/rest-parser/parser"
+	"io/ioutil"
 	"strings"
 )
 
-func curlRun(c *Config, restInfoList []parser.RestInfo) {
+func abRun(c *Config, restInfoList []parser.RestInfo) {
 	resultList := make(ResultList, len(restInfoList))
 	for k, v := range restInfoList {
 		extArgs := strings.Split(c.ExtArgs, " ")
-		out, err := curlCmd(resultList, &v, extArgs)
+		out, err := abCmd(resultList, &v, extArgs)
 		if err != nil {
 			fmt.Printf("err(%v)\n", err)
 		}
@@ -18,7 +19,7 @@ func curlRun(c *Config, restInfoList []parser.RestInfo) {
 	}
 }
 
-func curlCmd(resList ResultList, restInfo *parser.RestInfo, extArgs []string) (out string, err error) {
+func abCmd(resList ResultList, restInfo *parser.RestInfo, extArgs []string) (out string, err error) {
 	var (
 		args []string
 	)
@@ -31,17 +32,16 @@ func curlCmd(resList ResultList, restInfo *parser.RestInfo, extArgs []string) (o
 		}
 	}
 	if len(restInfo.Body) > 0 {
-		args = append(args, "-d")
+		args = append(args, "-p")
 		body := resList.Replace(restInfo.Body)
-		args = append(args, body)
+		_ = ioutil.WriteFile("/tmp/test.data", []byte(body), 0666)
+		args = append(args, "/tmp/test.data")
 	}
-	args = append(args, "-X")
-	args = append(args, restInfo.Method)
 	path := resList.Replace(restInfo.Path)
 	args = append(args, path)
 	fmt.Printf("%d: %v %v\n", restInfo.Index, restInfo.Method, restInfo.Comment)
 
-	out = runsCmd("curl", args...)
+	out = runsCmd("ab", args...)
 	fmt.Printf("\n%v\n", out)
 	return
 }

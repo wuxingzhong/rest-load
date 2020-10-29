@@ -3,11 +3,16 @@ rest api 负载测试
 ## 使用
 
 ```bash
-rest-load -c http-client.env.json  test.http
+rest-load curl -c http-client.env.json  test.http
 
 # 选择配置环境
-rest-load -c http-client.env.json  -e baidu  test.http
-
+rest-load curl -c http-client.env.json  -e baidu  test.http
+# 命令额外参数
+rest-load curl -c http-client.env.json   -e baidu \
+ --extArgs "-k -v"  test.http
+ 
+rest-load ab -c http-client.env.json   -e baidu \
+ --extArgs "-n 1000 -c 100  -T application/x-www-form-urlencoded"  test.http
 ```
 
 ## 结果替换
@@ -28,3 +33,12 @@ rest-load -c http-client.env.json  -e baidu  test.http
 ```
 
 引用: ```${1.data.}```
+
+## 依赖
+
+- curl 用于http请求
+- wrk http压力测试
+- ab  http压力测试
+
+
+
