@@ -3,7 +3,10 @@ rest api 负载测试
 ## 使用
 
 ```bash
-rest-load -c http-client.env.json  geoip-m.http 
+rest-load -c http-client.env.json  test.http
+
+# 选择配置环境
+rest-load -c http-client.env.json  -e baidu  test.http
 
 ```
 
@@ -19,9 +22,9 @@ rest-load -c http-client.env.json  geoip-m.http
   "message":"0",
   "ttl":1,
   "data":{
-    "url":"http://test-vnet.sunniwell.net:11180/iplist/iplist.txt"
+    "url":"http://127.0.0.1"
   }
+  
 ```
 
-引用
-- ```${1.data.}```
+引用: ```${1.data.}```

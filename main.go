@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/urfave/cli/v2"
@@ -9,12 +8,12 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 )
 
 func main() {
 	var (
 		restJsonConfig string
+		configEnv      string
 		restFile       string
 	)
 	app := &cli.App{
@@ -30,6 +29,15 @@ func main() {
 				Usage:       "json配置文件",
 				Destination: &restJsonConfig,
 				Value:       "http-client.env.json",
+			},
+			&cli.StringFlag{
+				Name: "configEnv",
+				Aliases: []string{
+					"e",
+				},
+				Usage:       "配置环境名称",
+				Destination: &configEnv,
+				Value:       "default",
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -51,18 +59,14 @@ func main() {
 		log.Fatal(err)
 		return
 	}
-	varMap := make(parser.VarMap, 10)
-	err = json.Unmarshal(restJsonData, &varMap)
+	nameMap := make(map[string]parser.VarMap)
+	err = json.Unmarshal(restJsonData, &nameMap)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
-
+	varMap := nameMap[configEnv]
 	restInfoList, err := parser.RestParser(restFile, varMap)
-	//data, _ := json.Marshal(restInfoList)
-	// fmt.Printf("%v\n\n", string(data))
-
-	//fmt.Printf("%v\n\n", string(data))
 	resultList := make(ResultList, len(restInfoList))
 	for k, v := range restInfoList {
 		out, err := curlCmd(resultList, &v)
