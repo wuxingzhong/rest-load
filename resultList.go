@@ -12,7 +12,8 @@ type ResultList []string
 func (r ResultList) Replace(old string) string {
 	reg := regexp.MustCompile("\\${(.+?)}")
 	str := reg.ReplaceAllStringFunc(old, r.replaceFunc)
-	str = Template(str)
+	m := MockTemplate{}
+	str = m.Template(str)
 	return str
 }
 
