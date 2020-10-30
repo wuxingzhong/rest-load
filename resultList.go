@@ -1,26 +1,31 @@
 package main
 
 import (
+	"bytes"
+	"github.com/Masterminds/sprig"
 	"github.com/tidwall/gjson"
-	"regexp"
 	"strconv"
 	"strings"
+	"text/template"
 )
 
 type ResultList []string
 
 func (r ResultList) Replace(old string) string {
-	reg := regexp.MustCompile("\\${(.+?)}")
-	str := reg.ReplaceAllStringFunc(old, r.replaceFunc)
-	m := MockTemplate{}
-	str = m.Template(str)
-	return str
+	tpl := template.Must(template.New("base").Delims("{%", "%}").
+		Funcs(sprig.TxtFuncMap()).
+		Funcs(map[string]interface{}{
+			"result": r.Result,
+		}).
+		Funcs(FuncMap()).Parse(old))
+	var buffer bytes.Buffer
+	_ = tpl.Execute(&buffer, r)
+	return buffer.String()
 }
 
-func (r ResultList) replaceFunc(old string) string {
-	old = strings.ReplaceAll(old, "${", "")
-	old = strings.ReplaceAll(old, "}", "")
-	tmpStr := strings.SplitN(old, ".", 2)
+func (r ResultList) Result(expStr string) string {
+
+	tmpStr := strings.SplitN(expStr, ".", 2)
 	v := ""
 	if len(tmpStr) < 2 {
 		return ""

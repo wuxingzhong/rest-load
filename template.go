@@ -1,15 +1,10 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"github.com/Masterminds/sprig"
 	"text/template"
 	"time"
 )
-
-type MockTemplate struct {
-}
 
 // 时间戳
 func Timestamp() string {
@@ -21,13 +16,4 @@ func FuncMap() template.FuncMap {
 		"timestamp": Timestamp,
 	}
 	return t
-}
-
-func (m *MockTemplate) Template(src string) string {
-
-	tpl := template.Must(template.New("base").Delims("{%", "%}").Funcs(sprig.TxtFuncMap()).Funcs(FuncMap()).Parse(src))
-
-	var buffer bytes.Buffer
-	_ = tpl.Execute(&buffer, m)
-	return buffer.String()
 }
