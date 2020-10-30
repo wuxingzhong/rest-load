@@ -49,7 +49,7 @@ func curlCmd(json string, restInfo *parser.RestInfo, extArgs []string) (out stri
 		for headerK, headerV := range restInfo.Header {
 			args = append(args, "-H")
 			restInfo.Header[headerK] = hModel.Replace(headerV)
-			head := fmt.Sprintf("%v: %v", headerK, headerV)
+			head := fmt.Sprintf("%v: %v", headerK, restInfo.Header[headerK])
 			args = append(args, head)
 		}
 	}
@@ -62,9 +62,9 @@ func curlCmd(json string, restInfo *parser.RestInfo, extArgs []string) (out stri
 	args = append(args, restInfo.Method)
 	restInfo.Path = hModel.Replace(restInfo.Path)
 	args = append(args, restInfo.Path)
-	fmt.Printf("%d: %v %v\n", restInfo.Index, restInfo.Method, restInfo.Comment)
+	fmt.Printf("%d: %v %v\n", restInfo.Index-1, restInfo.Comment)
 
 	out = runsCmd("curl", args...)
-	fmt.Printf("\n%v\n", out)
+	fmt.Printf("%v\n\n", out)
 	return
 }

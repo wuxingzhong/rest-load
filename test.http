@@ -12,5 +12,5 @@ POST {{host}}/api/v1/heartbeat
 Content-Type: application/x-www-form-urlencoded
 Authorization: {{Authorization}}
 
-dId={% http "0.response.data" %}&pId={% http "0.response.data.url" %}&date={% timestamp %}
+dId={% http "0.params.data" %}&pId={% http "0.body.data.url" %}&date={% timestamp %}
 
