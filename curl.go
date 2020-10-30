@@ -9,15 +9,15 @@ import (
 )
 
 func curlRun(c *Config, restInfoList []parser.RestInfo) {
-	json := `{}`
+	var jsonStr = `{}`
 	for k, v := range restInfoList {
 		extArgs := strings.Split(c.ExtArgs, " ")
-		out, err := curlCmd(json, &v, extArgs)
+		out, err := curlCmd(jsonStr, &v, extArgs)
 		if err != nil {
 			fmt.Printf("err(%v)\n", err)
 		}
 		if htype, b := v.Header["Content-Type"]; b && strings.Compare(htype, "application/json") == 0 {
-			json, _ = sjson.SetRaw(json, fmt.Sprintf("list.%d.params", k), v.Body)
+			jsonStr, _ = sjson.SetRaw(jsonStr, fmt.Sprintf("list.%d.params", k), v.Body)
 		} else {
 			rawQuery := ""
 			if strings.Compare(strings.ToLower(v.Method), "get") == 0 {
@@ -32,10 +32,10 @@ func curlRun(c *Config, restInfoList []parser.RestInfo) {
 				for k1, v1 := range values {
 					values2[k1] = strings.Join(v1, ",")
 				}
-				json, _ = sjson.Set(json, fmt.Sprintf("list.%d.params", k), values2)
+				jsonStr, _ = sjson.Set(jsonStr, fmt.Sprintf("list.%d.params", k), values2)
 			}
 		}
-		json, _ = sjson.SetRaw(json, fmt.Sprintf("list.%d.body", k), out)
+		jsonStr, _ = sjson.SetRaw(jsonStr, fmt.Sprintf("list.%d.body", k), out)
 	}
 }
 
@@ -43,6 +43,7 @@ func curlCmd(json string, restInfo *parser.RestInfo, extArgs []string) (out stri
 	var (
 		args []string
 	)
+	fmt.Printf("%d: %v\n", restInfo.Index-1, restInfo.Comment)
 	args = append(args, extArgs...)
 	hModel := &HttpModel{Json: json}
 	if len(restInfo.Header) > 0 {
@@ -62,7 +63,6 @@ func curlCmd(json string, restInfo *parser.RestInfo, extArgs []string) (out stri
 	args = append(args, restInfo.Method)
 	restInfo.Path = hModel.Replace(restInfo.Path)
 	args = append(args, restInfo.Path)
-	fmt.Printf("%d: %v %v\n", restInfo.Index-1, restInfo.Comment)
 
 	out = runsCmd("curl", args...)
 	fmt.Printf("%v\n\n", out)

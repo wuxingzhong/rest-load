@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-
 	"github.com/urfave/cli/v2"
 	"github.com/wuxingzhong/rest-parser/parser"
 	"io/ioutil"
@@ -134,5 +133,7 @@ func initRun(c *Config) []parser.RestInfo {
 	}
 	varMap := nameMap[c.ConfigEnv]
 	restInfoList, err := parser.RestParser(c.RestFile, varMap)
+	//data,_ := json.MarshalIndent( restInfoList[1],"","    ",)
+	//fmt.Printf("%v\n", string(data))
 	return restInfoList
 }
