@@ -12,6 +12,7 @@ require (
 	github.com/mitchellh/copystructure v1.0.0 // indirect
 	github.com/stretchr/testify v1.6.1 // indirect
 	github.com/tidwall/gjson v1.6.1
+	github.com/tidwall/sjson v1.1.2
 	github.com/urfave/cli/v2 v2.2.0
 	github.com/wuxingzhong/rest-parser v0.0.4
 	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897 // indirect

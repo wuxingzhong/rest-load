@@ -25,7 +25,7 @@ rest-load ab -c http-client.env.json   -e baidu \
 
 ### 结果替换
 
-支持利用上一个接口的结果
+支持利用上一个接口的数据
 
 示例:
 前面接口结果集
@@ -41,8 +41,10 @@ rest-load ab -c http-client.env.json   -e baidu \
 ```
 
 ```
-# 接口序列号从1开始.
-{% result "1.data" %}
+# 接口序列号从0开始.
+{% http "0.request.data" %}
+{% http "0.response.data" %}
+
 ```
 
 ## 依赖
