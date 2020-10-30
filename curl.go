@@ -17,7 +17,7 @@ func curlRun(c *Config, restInfoList []parser.RestInfo) {
 			fmt.Printf("err(%v)\n", err)
 		}
 		if htype, b := v.Header["Content-Type"]; b && strings.Compare(htype, "application/json") == 0 {
-			json, _ = sjson.SetRaw(json, fmt.Sprintf("list.%d.request", k), v.Body)
+			json, _ = sjson.SetRaw(json, fmt.Sprintf("list.%d.params", k), v.Body)
 		} else {
 			rawQuery := ""
 			if strings.Compare(strings.ToLower(v.Method), "get") == 0 {
@@ -32,10 +32,10 @@ func curlRun(c *Config, restInfoList []parser.RestInfo) {
 				for k1, v1 := range values {
 					values2[k1] = strings.Join(v1, ",")
 				}
-				json, _ = sjson.Set(json, fmt.Sprintf("list.%d.request", k), values2)
+				json, _ = sjson.Set(json, fmt.Sprintf("list.%d.params", k), values2)
 			}
 		}
-		json, _ = sjson.SetRaw(json, fmt.Sprintf("list.%d.response", k), out)
+		json, _ = sjson.SetRaw(json, fmt.Sprintf("list.%d.body", k), out)
 	}
 }
 
