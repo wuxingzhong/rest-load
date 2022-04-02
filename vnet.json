@@ -1,0 +1,14 @@
+{
+  "default": {
+    "host": "https://test-vnet.sunniwell.net:11443",
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJTY29wZSI6ImFsbCIsImF1ZCI6ImRldmljZSIsImV4cCI6OTk5OTk5OTk5OSwic3ViIjoic3d0ZXN0MDAwMSJ9.Q0WGNpuKMxOE-yTzMJYCifx0e_fIORqK_gRBBcUbhHA"
+  },
+  "vnet": {
+    "host": "https://dapi-vnet.mtel.net.mo",
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJTY29wZSI6ImFsbCIsImF1ZCI6ImRldmljZSIsImV4cCI6OTk5OTk5OTk5OSwic3ViIjoic3d0ZXN0MDAwMSJ9.Q0WGNpuKMxOE-yTzMJYCifx0e_fIORqK_gRBBcUbhHA"
+  },
+  "local": {
+    "host": "https://10.10.16.2:11443",
+    "Authorization": "xxx"
+  }
+}

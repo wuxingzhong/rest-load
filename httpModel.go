@@ -17,7 +17,7 @@ func (h *HttpModel) Replace(old string) string {
 	if !strings.Contains(old, "{%") {
 		return old
 	}
-	fmt.Printf("----%v\n", old)
+	// fmt.Printf("----%v\n", old)
 	tpl := template.Must(template.New("base").Delims("{%", "%}").
 		Funcs(sprig.TxtFuncMap()).
 		Funcs(map[string]interface{}{

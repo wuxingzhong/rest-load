@@ -1,0 +1,16 @@
+
+### 获取配置信息,开机获取后保存,
+
+GET {{host}}/api/v1/vnet-gw/config?productId=(string)&deviceId=123456
+Content-Type: application/x-www-form-urlencoded
+Authorization: {{Authorization}}
+
+
+### 心跳
+
+POST {{host}}/api/v1/vnet-gw/heartbeat?deviceId={% http "0.params.deviceId" %}&productId={% http "0.body.data.ipListInfo.url" %}
+Content-Type: application/x-www-form-urlencoded
+Authorization: {{Authorization}}
+
+deviceId={% http "0.params.deviceId" %}&productId={% http "0.body.data.ipListInfo.url" %}
+
